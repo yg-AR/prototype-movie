@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AR Final Design</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
+    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; position: fixed; width: 100%; height: 100%; background: #000; }
+        
+        #start-button {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 9999; padding: 18px 36px; background: linear-gradient(135deg, #28a745, #218838);
+            color: white; border: none; border-radius: 50px; font-family: 'Noto Sans JP', sans-serif;
+            font-size: 18px; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+        }
+
+        /* 誘導ボタンのカッコいい装飾 */
+        #link-button {
+            display: none; position: fixed; bottom: 12%; left: 50%; transform: translateX(-50%);
+            z-index: 8888; padding: 12px 40px; 
+            /* グラデーションと半透明 */
+            background: linear-gradient(90deg, rgba(0,123,255,0.9), rgba(0,86,179,0.9));
+            color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 100px;
+            font-family: 'Noto Sans JP', sans-serif; font-size: 16px; letter-spacing: 0.1em;
+            text-decoration: none; text-align: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            /* ふわふわ浮くアニメーション */
+            animation: floating 2s ease-in-out infinite;
+            transition: all 0.3s;
+        }
+
+        @keyframes floating {
+            0% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+
+        #link-button:active { transform: translateX(-50%) scale(0.95); }
+    </style>
+</head>
+<body>
+    <button id="start-button" onclick="startAR()">ARコンテンツを開始</button>
+    <a id="link-button" href="https://yoshidagabou.co.jp/">GO SITE ＞</a>
+
+    <a-scene 
+        mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: yes; filterMinCF: 0.0001; filterBeta: 0.001;" 
+        vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
+        renderer="colorManagement: true, precision: medium">
+        
+        <a-assets>
+            <video id="v" src="./intro_video.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted autoplay></video>
+        </a-assets>
+
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+        <a-entity id="t" mindar-image-target="targetIndex: 0">
+            <a-video id="ar-video" src="#v" width="1" height="1" position="0 0 0.1" visible="false"></a-video>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        const video = document.querySelector("#v");
+        const arVideoObj = document.querySelector("#ar-video");
+        const startBtn = document.querySelector("#start-button");
+        const linkBtn = document.querySelector("#link-button");
+
+        function startAR() {
+            const sceneEl = document.querySelector('a-scene');
+            const arSystem = sceneEl.systems["mindar-image-system"];
+            startBtn.style.display = "none";
+            video.play();
+            arSystem.start();
+        }
+
+        const targetEl = document.querySelector('#t');
+
+        targetEl.addEventListener("targetFound", () => {
+            video.muted = false;
+            arVideoObj.setAttribute("visible", "true");
+            linkBtn.style.display = "block";
+        });
+
+        targetEl.addEventListener("targetLost", () => {
+            arVideoObj.setAttribute("visible", "false");
+            linkBtn.style.display = "none";
+        });
+    </script>
+</body>
+</html>
