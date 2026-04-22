@@ -1,9 +1,18 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-1TQ2TXL698"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      // パターンA（URLパラメータ）を自動で拾うための基本設定
+      gtag('config', 'G-1TQ2TXL698');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AR Final Design</title>
+    <title>AR Final Design (GA4 Ready)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700&display=swap" rel="stylesheet">
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.2/dist/mindar-image-aframe.prod.js"></script>
@@ -17,17 +26,14 @@
             font-size: 18px; font-weight: bold; box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
-        /* 誘導ボタンのカッコいい装飾 */
         #link-button {
             display: none; position: fixed; bottom: 12%; left: 50%; transform: translateX(-50%);
             z-index: 8888; padding: 12px 40px; 
-            /* グラデーションと半透明 */
             background: linear-gradient(90deg, rgba(0,123,255,0.9), rgba(0,86,179,0.9));
             color: white; border: 2px solid rgba(255,255,255,0.5); border-radius: 100px;
             font-family: 'Noto Sans JP', sans-serif; font-size: 16px; letter-spacing: 0.1em;
             text-decoration: none; text-align: center;
             box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-            /* ふわふわ浮くアニメーション */
             animation: floating 2s ease-in-out infinite;
             transition: all 0.3s;
         }
@@ -43,7 +49,7 @@
 </head>
 <body>
     <button id="start-button" onclick="startAR()">ARコンテンツを開始</button>
-    <a id="link-button" href="https://yoshidagabou.co.jp/">GO SITE ＞</a>
+    <a id="link-button" href="https://yoshidagabou.co.jp/" onclick="trackLinkClick()">GO SITE ＞</a>
 
     <a-scene 
         mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: yes; filterMinCF: 0.0001; filterBeta: 0.001;" 
@@ -67,12 +73,19 @@
         const startBtn = document.querySelector("#start-button");
         const linkBtn = document.querySelector("#link-button");
 
+        // URLから「?id=XXX」などのパラメータを取得する関数
+        const urlParams = new URLSearchParams(window.location.search);
+        const clientId = urlParams.get('id') || 'unknown_client';
+
         function startAR() {
             const sceneEl = document.querySelector('a-scene');
             const arSystem = sceneEl.systems["mindar-image-system"];
             startBtn.style.display = "none";
             video.play();
             arSystem.start();
+
+            // 【イベント送信】AR開始ボタンが押された
+            gtag('event', 'ar_session_start', { 'client_id': clientId });
         }
 
         const targetEl = document.querySelector('#t');
@@ -81,12 +94,26 @@
             video.muted = false;
             arVideoObj.setAttribute("visible", "true");
             linkBtn.style.display = "block";
+
+            // 【イベント送信】ターゲット認識成功（召喚成功）
+            gtag('event', 'ar_target_found', {
+                'client_id': clientId,
+                'target_name': 'Main_Intro'
+            });
         });
 
         targetEl.addEventListener("targetLost", () => {
             arVideoObj.setAttribute("visible", "false");
             linkBtn.style.display = "none";
         });
+
+        // 【イベント送信】誘導ボタンのクリック計測
+        function trackLinkClick() {
+            gtag('event', 'ar_link_click', {
+                'client_id': clientId,
+                'destination': 'Official_Site'
+            });
+        }
     </script>
 </body>
 </html>
