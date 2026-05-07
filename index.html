@@ -97,6 +97,10 @@
             arVideoObj.setAttribute("visible", "true");
             linkBtn.style.display = "block";
 
+            // 1. まず、URLからIDを拾い上げる（引っ越し先：gtagより上へ）
+const urlParams = new URLSearchParams(window.location.search);
+const clientId = urlParams.get('id') || 'unknown_client';
+
             // 【イベント送信】ターゲット認識成功（召喚成功）
             gtag('event', 'ar_target_found', {
                 'client_id': clientId,
