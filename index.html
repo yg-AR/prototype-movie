@@ -70,41 +70,38 @@
     </a-scene>
 
     <script>
-        const video = document.querySelector("#v");
-        const arVideoObj = document.querySelector("#ar-video");
-        const startBtn = document.querySelector("#start-button");
-        const linkBtn = document.querySelector("#link-button");
+    // 1. まず、スクリプトの冒頭（一番外側）でIDを確定させてしまう
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get('id') || 'no_id_found'; // 見つからない時はこう表示させる
 
-        // URLから「?id=XXX」などのパラメータを取得する関数
-        const urlParams = new URLSearchParams(window.location.search);
-        const clientId = urlParams.get('id') || 'unknown_client';
+    const video = document.querySelector("#v");
+    const arVideoObj = document.querySelector("#ar-video");
+    const startBtn = document.querySelector("#start-button");
+    const linkBtn = document.querySelector("#link-button");
 
-        function startAR() {
-            const sceneEl = document.querySelector('a-scene');
-            const arSystem = sceneEl.systems["mindar-image-system"];
-            startBtn.style.display = "none";
-            video.play();
-            arSystem.start();
+    function startAR() {
+        const sceneEl = document.querySelector('a-scene');
+        const arSystem = sceneEl.systems["mindar-image-system"];
+        startBtn.style.display = "none";
+        video.play();
+        arSystem.start();
 
-            // 【イベント送信】AR開始ボタンが押された
-            gtag('event', 'ar_session_start', { 'client_id': clientId });
-        }
+        // IDを飛ばす
+        gtag('event', 'ar_session_start', { 'client_id': clientId });
+    }
 
-        const targetEl = document.querySelector('#t');
+    const targetEl = document.querySelector('#t');
 
-        targetEl.addEventListener("targetFound", () => {
-            video.muted = false;
-            arVideoObj.setAttribute("visible", "true");
-            linkBtn.style.display = "block";
+    targetEl.addEventListener("targetFound", () => {
+        video.muted = false;
+        arVideoObj.setAttribute("visible", "true");
+        linkBtn.style.display = "block";
 
-            // 1. まず、URLからIDを拾い上げる（引っ越し先：gtagより上へ）
-const urlParams = new URLSearchParams(window.location.search);
-const clientId = urlParams.get('id') || 'unknown_client';
-
-            // 【イベント送信】ターゲット認識成功（召喚成功）
-            gtag('event', 'ar_target_found', {
-                'client_id': clientId,
-                'target_name': 'Main_Intro'
+        // 【ここが重要】変数clientIdをそのまま使う
+        console.log("Sending ID:", clientId); // ブラウザのコンソールで確認用
+        gtag('event', 'ar_target_found', {
+            'client_id': clientId,
+            'target_name': 'Main_Intro'
             });
         });
 
