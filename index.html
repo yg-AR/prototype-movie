@@ -87,8 +87,10 @@
         arSystem.start();
 
         // IDを飛ばす
-        gtag('event', 'ar_session_start', { 'client_id': clientId });
-    }
+     // ar_session_start の部分をこう変えてみてください
+gtag('event', 'ar_session_start', { 
+    'test_id_key': clientId  // client_id ではなく test_id_key に変える
+});
 
     const targetEl = document.querySelector('#t');
 
