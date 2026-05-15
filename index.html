@@ -79,12 +79,22 @@
     const startBtn = document.querySelector("#start-button");
     const linkBtn = document.querySelector("#link-button");
 
-    function startAR() {
-        const sceneEl = document.querySelector('a-scene');
-        const arSystem = sceneEl.systems["mindar-image-system"];
-        startBtn.style.display = "none";
-        video.play();
-        arSystem.start();
+   // startAR() 関数の中を以下のように書き換え
+function startAR() {
+    const sceneEl = document.querySelector('a-scene');
+    const arSystem = sceneEl.systems["mindar-image-system"];
+    startBtn.style.display = "none";
+    video.play();
+    arSystem.start();
+
+    // イベントではなく「ユーザーの性質」としてIDをセットする
+    gtag('set', 'user_properties', {
+        'client_id_user': clientId
+    });
+
+    // その後、普通にイベントを送る
+    gtag('event', 'ar_session_start');
+}
 
         // IDを飛ばす
      // ar_session_start の部分をこう変えてみてください
