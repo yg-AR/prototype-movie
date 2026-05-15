@@ -53,10 +53,10 @@
     <button id="start-button" onclick="startAR()">ARコンテンツを開始</button>
     <a id="link-button" href="https://yoshidagabou.co.jp/" onclick="trackLinkClick()">GO SITE ＞</a>
 
-    <a-scene 
-        mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: yes; filterMinCF: 0.0001; filterBeta: 0.001;" 
-        vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
-        renderer="colorManagement: true, precision: medium">
+   <a-scene 
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false; uiScanning: yes;" 
+    vr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false"
+    renderer="colorManagement: true;">
         
         <a-assets>
             <video id="v" src="./intro_video.mp4" preload="auto" loop="true" crossorigin="anonymous" playsinline webkit-playsinline muted autoplay></video>
