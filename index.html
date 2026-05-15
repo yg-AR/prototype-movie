@@ -79,7 +79,6 @@
     const startBtn = document.querySelector("#start-button");
     const linkBtn = document.querySelector("#link-button");
 
-   // startAR() 関数の中を以下のように書き換え
 function startAR() {
     const sceneEl = document.querySelector('a-scene');
     const arSystem = sceneEl.systems["mindar-image-system"];
@@ -87,20 +86,16 @@ function startAR() {
     video.play();
     arSystem.start();
 
-    // イベントではなく「ユーザーの性質」としてIDをセットする
+    // 1. 【本番用】ユーザープロパティとしてIDを固定（これがLooker Studioで活躍します）
     gtag('set', 'user_properties', {
         'client_id_user': clientId
     });
 
-    // その後、普通にイベントを送る
-    gtag('event', 'ar_session_start');
+    // 2. 【本番用】イベントとしてIDを送信（バックアップ＆分析用）
+    gtag('event', 'ar_session_start', {
+        'client_id': clientId
+    });
 }
-
-        // IDを飛ばす
-     // ar_session_start の部分をこう変えてみてください
-gtag('event', 'ar_session_start', { 
-    'test_id_key': clientId  // client_id ではなく test_id_key に変える
-});
 
     const targetEl = document.querySelector('#t');
 
